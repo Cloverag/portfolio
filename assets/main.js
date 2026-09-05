@@ -59,6 +59,7 @@
     root.dataset.theme = next;
     try { localStorage.setItem('theme', next); } catch (e) { /* private mode */ }
     paintThemeLabel();
+    window.dispatchEvent(new CustomEvent('portfolio:themechange'));
     return next;
   }
 
@@ -94,17 +95,77 @@
     ]);
   }
 
+  // ------------------------------------------------------------ boot line
+
+  /* The hero shows a shell prompt that had never actually run anything. It
+     types once per session — not per page view — so it reads as arrival
+     rather than as an animation the visitor has to sit through again. */
+  (function boot() {
+    var target = $('#boot-cmd');
+    var body = $('#hero-body');
+    if (!target || !body) return;
+
+    var cmd = 'whoami';
+    var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var seen = false;
+    try { seen = sessionStorage.getItem('booted') === '1'; } catch (e) { seen = false; }
+
+    if (reduced || seen) { target.textContent = cmd; body.classList.add('is-in'); return; }
+
+    try { sessionStorage.setItem('booted', '1'); } catch (e) { /* private mode */ }
+
+    var i = 0, timer;
+    body.classList.add('is-waiting');
+
+    function finish() {
+      clearInterval(timer);
+      target.textContent = cmd;
+      body.classList.remove('is-waiting');
+      body.classList.add('is-in');
+      document.removeEventListener('keydown', finish);
+      document.removeEventListener('pointerdown', finish);
+    }
+
+    // Any input skips it. An animation a visitor cannot escape is a toy.
+    document.addEventListener('keydown', finish);
+    document.addEventListener('pointerdown', finish);
+
+    timer = setInterval(function () {
+      target.textContent = cmd.slice(0, ++i);
+      if (i >= cmd.length) setTimeout(finish, 140);
+    }, 52);
+  })();
+
   // ----------------------------------------------------------- 01 skills
 
+  /* A skill that names a technology used in a listed project becomes a link to
+     those projects. The rest stay plain text — the point is that a claim you
+     can click is a claim backed by something on this page. */
+  var USED_IN = {};
+  SITE.projects.forEach(function (p) {
+    p.stack.forEach(function (s) { (USED_IN[s] = USED_IN[s] || []).push(p.name); });
+  });
+
+  var linked = 0;
   fill('#skills-grid', SITE.skills.map(function (g) {
     return el('div', { class: 'skills__group' }, [
       el('h3', { text: g.group }),
-      el('ul', {}, g.items.map(function (i) { return el('li', { text: i }); }))
+      el('ul', {}, g.items.map(function (skill) {
+        var where = USED_IN[skill];
+        if (!where) return el('li', { text: skill });
+        linked++;
+        return el('li', {}, [el('button', {
+          class: 'skill__link', type: 'button', text: skill,
+          title: where.length + (where.length === 1 ? ' project: ' : ' projects: ') + where.join(', '),
+          onclick: function () { filterByTech(skill); }
+        })]);
+      }))
     ]);
   }));
 
   var skillCount = SITE.skills.reduce(function (n, g) { return n + g.items.length; }, 0);
-  $('#skills-meta').textContent = skillCount + ' entries · ' + SITE.skills.length + ' groups';
+  $('#skills-meta').textContent =
+    skillCount + ' entries · ' + linked + ' link to a project below';
 
   var edu = p.education;
   fill('#education', [
@@ -120,6 +181,17 @@
 
   var trackById = {};
   SITE.tracks.forEach(function (t) { trackById[t.id] = t; });
+
+  // How many projects use each technology. Anything above one is worth
+  // linking, and is exactly what the knowledge graph draws as a hub.
+  var SHARED = {};
+  (function () {
+    var count = {};
+    SITE.projects.forEach(function (p) {
+      p.stack.forEach(function (s) { count[s] = (count[s] || 0) + 1; });
+    });
+    Object.keys(count).forEach(function (s) { if (count[s] > 1) SHARED[s] = count[s]; });
+  })();
 
   var activeTrack = 'all';
   var rows = {};           // project id -> { root, button, body }
@@ -171,7 +243,17 @@
               ]);
             }))]
           : [],
-        [el('ul', { class: 'stack' }, proj.stack.map(function (s) { return el('li', { text: s }); }))],
+        [el('ul', { class: 'stack' }, proj.stack.map(function (s) {
+          // Shared technologies are navigable; single-use ones have nowhere
+          // to go, so they stay plain text rather than a dead-end button.
+          if (!SHARED[s]) return el('li', { text: s });
+          return el('li', {}, [el('button', {
+            class: 'stack__link', type: 'button',
+            title: 'show the ' + SHARED[s] + ' projects using ' + s,
+            text: s,
+            onclick: function (ev) { ev.stopPropagation(); filterByTech(s); }
+          })]);
+        }))],
         [el('div', { class: 'proj__links' }, [
           proj.repo ? el('a', { class: 'chip', href: 'https://github.com/' + proj.repo, rel: 'noopener', text: 'repo ↗' }) : null,
           proj.live ? el('a', { class: 'chip chip--solid', href: proj.live, rel: 'noopener', text: 'live demo ↗' }) : null,
@@ -201,7 +283,12 @@
 
   // --- filters
 
+  // A tech filter is transient: it is set by clicking a graph node or a stack
+  // chip, and is not one of the standing filter buttons.
+  var techFilter = null;
+
   function matches(proj, id) {
+    if (techFilter) return proj.stack.indexOf(techFilter) !== -1;
     if (id === 'all') return true;
     if (id === 'featured') return !!proj.featured;
     return proj.track === id;
@@ -231,7 +318,8 @@
     [countEl]
   ));
 
-  function setTrack(id) {
+  function setTrack(id, keepTech) {
+    if (!keepTech) techFilter = null;
     activeTrack = id;
     var shown = 0;
     SITE.projects.forEach(function (proj) {
@@ -246,9 +334,22 @@
       .filter(function (proj) { return matches(proj, id); })
       .map(function (proj) { return proj.id; });
     cursor = -1;
-    countEl.textContent = shown + ' of ' + SITE.projects.length + ' shown';
+    countEl.textContent = techFilter
+      ? shown + ' built with ' + techFilter
+      : shown + ' of ' + SITE.projects.length + ' shown';
+    countEl.classList.toggle('is-tech', !!techFilter);
     $('#projects-empty').hidden = shown > 0;
     return shown;
+  }
+
+  function filterByTech(tech) {
+    techFilter = tech;
+    var n = setTrack('all', true);
+    Array.prototype.forEach.call(document.querySelectorAll('.filter'), function (b) {
+      b.setAttribute('aria-pressed', 'false');
+    });
+    $('#projects').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return n;
   }
 
   setTrack('all');
@@ -533,6 +634,48 @@
     theme: { usage: 'theme', about: 'switch between dark and light', run: function () {
       print('theme: ' + toggleTheme());
     } },
+    find: {
+      usage: 'find <text>',
+      about: 'search every project, metric and technology',
+      run: function (args) {
+        var q = args.join(' ').toLowerCase().trim();
+        if (!q) { print('find: give me something to look for'); return; }
+
+        var hits = SITE.projects.map(function (proj) {
+          var hay = [proj.name, proj.title, proj.blurb, proj.detail.join(' '),
+                     proj.stack.join(' '), proj.year, proj.status,
+                     proj.metrics.map(function (m) { return m.v + ' ' + m.k; }).join(' ')
+                    ].join(' ').toLowerCase();
+          var at = hay.indexOf(q);
+          if (at === -1) return null;
+          // why it matched, so the result is checkable rather than magic
+          var where = proj.stack.filter(function (s) { return s.toLowerCase().indexOf(q) !== -1; });
+          return {
+            proj: proj,
+            why: where.length ? 'uses ' + where.join(', ')
+               : proj.title.toLowerCase().indexOf(q) !== -1 ? 'in the title'
+               : proj.metrics.some(function (m) { return (m.v + m.k).toLowerCase().indexOf(q) !== -1; })
+                 ? 'in a measured result' : 'in the description'
+          };
+        }).filter(Boolean);
+
+        if (!hits.length) {
+          print('no match for "' + q + '". try: help, ls, or a project name.', 'err');
+          return;
+        }
+        print(hits.length + (hits.length === 1 ? ' project' : ' projects') + ' match "' + q + '":');
+        printTable(hits.map(function (h) { return [h.proj.name, h.why]; }));
+        if (hits.length === 1) focusProject(hits[0].proj.id, true);
+      }
+    },
+    graph: {
+      usage: 'graph',
+      about: 'jump to the knowledge graph of the work',
+      run: function () {
+        print('rendering ' + SITE.projects.length + ' projects and the technologies they share');
+        goto('#graph-section');
+      }
+    },
     clear: { usage: 'clear', about: 'clear this output', run: function () { out.textContent = ''; } }
   };
 
@@ -548,10 +691,11 @@
 
     var cmd = COMMANDS[name];
     if (!cmd) {
-      // If it names a project, treat it as `cat`. Saves typing the verb.
+      // Unknown input is far more likely to be something the visitor is
+      // looking for than a mistyped verb, so fall through to search.
       var proj = findProject(name);
       if (proj) { COMMANDS.cat.run([name]); return; }
-      print(name + ': command not found. type help.', 'err');
+      COMMANDS.find.run([name].concat(parts));
       return;
     }
     cmd.run(parts);
@@ -648,6 +792,13 @@
     }, { rootMargin: '-20% 0px -70% 0px' });
     sections.forEach(function (s) { io.observe(s); });
   }
+
+  // The knowledge graph is a separate script and drives the list through this.
+  window.PORTFOLIO = {
+    openProject: function (id) { focusProject(id, true); },
+    filterByTech: filterByTech,
+    setTrack: setTrack
+  };
 
   // Deep link: /#projects?p=callosum style is overkill; #callosum is enough.
   if (location.hash) {

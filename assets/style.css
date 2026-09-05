@@ -694,3 +694,118 @@ kbd {
 
 /* Give the page a little slack so the fixed bar never covers the last line. */
 @media (max-width: 40rem) { body { padding-bottom: 8rem; } }
+
+/* ---------------------------------------------------------- boot sequence */
+
+/* Held back only while the prompt types itself. If JS never runs, the class
+   is never added and the hero is simply visible — no blank page. */
+#hero-body.is-waiting { opacity: 0; }
+#hero-body.is-in { animation: rise 0.5s cubic-bezier(.2,.7,.3,1) both; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #hero-body.is-waiting { opacity: 1; }
+  #hero-body.is-in { animation: none; }
+}
+
+/* --------------------------------------------------------- knowledge graph */
+
+.graph__intro {
+  max-width: 74ch;
+  margin: 0 0 1.4rem;
+  color: var(--fg-dim);
+}
+.graph__intro b { color: var(--fg); font-weight: 500; }
+
+#graph {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg-raised);
+  overflow: hidden;
+}
+
+#graph-canvas {
+  display: block;
+  width: 100%;
+  height: clamp(22rem, 46vw, 34rem);
+  touch-action: pan-y;
+}
+
+.graph__legend {
+  margin: 0;
+  padding: 0.7rem 1rem;
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--fg-dim);
+  font-size: 0.8em;
+  line-height: 1.5;
+  min-height: 2.9rem;
+}
+
+/* ------------------------------------------------------- stack as filters */
+
+.stack__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg-faint);
+  font: inherit;
+  font-size: 1em;
+  cursor: pointer;
+  border-bottom: 1px dashed var(--line);
+}
+.stack__link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+.filters__count.is-tech { color: var(--accent); }
+
+/* ------------------------------------------------------------------ print */
+
+/* A recruiter who prints the page should get a readable document, not a
+   dark rectangle with a dead canvas in the middle. */
+@media print {
+  .topbar, .cli, #graph, .filters, .section__meta, .heatmap__scroll,
+  .heatmap__legend, .copy, .proj__caret { display: none !important; }
+
+  :root {
+    --bg: #fff; --bg-raised: #fff; --bg-inset: #fff;
+    --fg: #000; --fg-dim: #333; --fg-faint: #555;
+    --line: #bbb; --line-soft: #ddd; --accent: #000; --accent-wash: transparent;
+  }
+
+  /* Print does not run CSS animations, so `animation-fill-mode: both` would
+     hold the hero at the `from` keyframe — opacity 0 — and print a blank
+     first page. Force it visible. */
+  #hero-body, #hero-body.is-waiting, #hero-body.is-in {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  body { padding: 0; font-size: 10.5pt; }
+  /* Not zero: content flush against the page edge gets clipped by the printer
+     margin, which ate the first character of every line. */
+  .wrap { max-width: none; padding-inline: 0.5cm; }
+  .section { padding-block: 1.2rem; break-inside: avoid; }
+  .hero__name { font-size: 26pt; }
+  .proj__body[hidden] { display: grid !important; }   /* print every project in full */
+  .proj { break-inside: avoid; }
+  a { text-decoration: underline; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 8pt; color: #555; }
+}
+
+/* A skill you can click is a skill something on this page actually backs. */
+.skill__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg-dim);
+  font: inherit;
+  font-size: 1em;
+  cursor: pointer;
+  border-bottom: 1px dashed var(--line);
+}
+.skill__link:hover { color: var(--accent); border-bottom-color: var(--accent); }
