@@ -147,9 +147,11 @@
           document.createTextNode(proj.name),
           el('span', { class: 'proj__slash', text: '/' })
         ]),
-        el('p', { class: 'proj__blurb', text: proj.blurb })
+        el('span', { class: 'proj__blurb', text: proj.blurb })
       ]),
       el('span', { class: 'proj__aside' }, [
+        el('span', { class: 'proj__star', title: proj.featured ? 'featured' : null,
+                     text: proj.featured ? '\u2605' : '' }),
         el('span', { class: 'proj__track', text: track ? track.dir : '' }),
         el('span', { class: 'proj__year', text: proj.year }),
         statusTag(proj.status),
@@ -199,10 +201,14 @@
 
   // --- filters
 
+  function matches(proj, id) {
+    if (id === 'all') return true;
+    if (id === 'featured') return !!proj.featured;
+    return proj.track === id;
+  }
+
   function countFor(id) {
-    return id === 'all'
-      ? SITE.projects.length
-      : SITE.projects.filter(function (x) { return x.track === id; }).length;
+    return SITE.projects.filter(function (x) { return matches(x, id); }).length;
   }
 
   function makeFilter(id, label) {
@@ -220,7 +226,7 @@
 
   var countEl = el('span', { class: 'filters__count' });
   fill('#filters', [].concat(
-    [makeFilter('all', 'all')],
+    [makeFilter('all', 'all'), makeFilter('featured', '\u2605 featured')],
     SITE.tracks.map(function (t) { return makeFilter(t.id, t.dir); }),
     [countEl]
   ));
@@ -229,7 +235,7 @@
     activeTrack = id;
     var shown = 0;
     SITE.projects.forEach(function (proj) {
-      var match = id === 'all' || proj.track === id;
+      var match = matches(proj, id);
       rows[proj.id].root.hidden = !match;
       if (match) shown++;
     });
@@ -237,7 +243,7 @@
       b.setAttribute('aria-pressed', String(b.dataset.track === id));
     });
     order = SITE.projects
-      .filter(function (proj) { return id === 'all' || proj.track === id; })
+      .filter(function (proj) { return matches(proj, id); })
       .map(function (proj) { return proj.id; });
     cursor = -1;
     countEl.textContent = shown + ' of ' + SITE.projects.length + ' shown';
@@ -452,13 +458,14 @@
     },
     cd: {
       usage: 'cd <track>',
-      about: 'filter the project list (ai, sys, data, sec, or ..)',
+      about: 'filter the list (ai, sys, data, sec, featured, or ..)',
       run: function (args) {
         var t = (args[0] || '').replace(/\/$/, '');
         if (t === '..' || t === '' || t === '~') { setTrack('all'); print('showing all projects'); goto('#projects'); return; }
-        if (!trackById[t]) { print('cd: no such track: ' + t, 'err'); return; }
+        if (t !== 'featured' && !trackById[t]) { print('cd: no such track: ' + t, 'err'); return; }
         var n = setTrack(t);
-        print('filtered to ' + trackById[t].dir + ' — ' + n + ' project' + (n === 1 ? '' : 's'));
+        print('filtered to ' + (t === 'featured' ? 'featured' : trackById[t].dir) +
+              ' — ' + n + ' project' + (n === 1 ? '' : 's'));
         goto('#projects');
       }
     },
@@ -579,6 +586,25 @@
       if (hit.length === 1) { e.preventDefault(); input.value = hit[0] + ' '; }
       else if (hit.length > 1) { e.preventDefault(); print(hit.join('  ')); }
     }
+  });
+
+  // ------------------------------------------------------------ copy button
+
+  Array.prototype.forEach.call(document.querySelectorAll('.copy'), function (btn) {
+    btn.addEventListener('click', function () {
+      var value = btn.dataset.copy;
+      var done = function (ok) {
+        btn.textContent = ok ? 'copied \u2713' : 'select it';
+        btn.classList.toggle('is-done', ok);
+        setTimeout(function () { btn.textContent = 'copy'; btn.classList.remove('is-done'); }, 1600);
+      };
+      // navigator.clipboard is undefined on insecure origins (plain http, file://).
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(value).then(function () { done(true); }, function () { done(false); });
+      } else {
+        done(false);
+      }
+    });
   });
 
   // -------------------------------------------------------- global keys

@@ -9,12 +9,26 @@
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#0a0a0a">
 
+<link rel="canonical" href="https://raghav-singh-iiitn.vercel.app/">
+
 <meta property="og:type" content="profile">
+<meta property="og:url" content="https://raghav-singh-iiitn.vercel.app/">
 <meta property="og:title" content="Raghav Singh — Data Science &amp; Systems">
 <meta property="og:description" content="Knowledge graphs, retrieval systems, deep learning, and infrastructure I run myself.">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://raghav-singh-iiitn.vercel.app/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Raghav Singh — Data Science &amp; Systems">
+<meta name="twitter:description" content="Knowledge graphs, retrieval systems, deep learning, and infrastructure I run myself.">
+<meta name="twitter:image" content="https://raghav-singh-iiitn.vercel.app/assets/og.png">
 
+<!-- Linked here rather than @import-ed from style.css: an @import is only
+     discovered after style.css downloads and parses, which delays the font
+     by a whole round trip. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap">
 <link rel="stylesheet" href="assets/style.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0a'/><text x='16' y='23' font-family='monospace' font-size='19' font-weight='700' fill='%23ffb454' text-anchor='middle'>&gt;_</text></svg>">
 
@@ -30,6 +44,15 @@
 <body>
 
 <a class="skip" href="#main">Skip to content</a>
+
+<noscript>
+  <div class="noscript">
+    <b>This page renders its project list, skills and activity with JavaScript,
+    which is currently disabled.</b> The written content still exists — read it
+    on <a href="https://github.com/Cloverag/portfolio">the repository</a>, or
+    reach me at <a href="mailto:byjsuynr222@gmail.com">byjsuynr222@gmail.com</a>.
+  </div>
+</noscript>
 
 <header class="topbar">
   <div class="wrap topbar__inner">
@@ -86,7 +109,7 @@
     <div class="skills" id="skills-grid"></div>
 
     <div class="section__head" style="margin-top:3rem">
-      <span class="section__no">01b</span>
+      <span class="section__no section__no--sub" aria-hidden="true">└─</span>
       <p class="prompt">
         <span class="prompt__user">raghav@iiitn</span><span class="prompt__path">:~</span><span class="prompt__sig">$</span>
         <span class="prompt__cmd">cat education.txt &amp;&amp; cat now.txt</span>
@@ -172,11 +195,14 @@
     <div class="contact__grid">
       <dl class="kv">
         <dt>email</dt>
-        <dd><a href="mailto:byjsuynr222@gmail.com">byjsuynr222@gmail.com</a></dd>
+        <dd>
+          <a href="mailto:byjsuynr222@gmail.com">byjsuynr222@gmail.com</a>
+          <button class="copy" type="button" data-copy="byjsuynr222@gmail.com">copy</button>
+        </dd>
         <dt>github</dt>
         <dd><a href="https://github.com/Cloverag" rel="me noopener">github.com/Cloverag</a></dd>
         <dt>linkedin</dt>
-        <dd><a href="https://linkedin.com/in/raghav-singh-11b82a290" rel="me noopener">/in/raghav-singh</a></dd>
+        <dd><a href="https://linkedin.com/in/raghav-singh-11b82a290" rel="me noopener">/in/raghav-singh-11b82a290</a></dd>
         <dt>location</dt>
         <dd id="contact-location">Yamunanagar, Haryana, IN</dd>
       </dl>
@@ -189,7 +215,7 @@
     </div>
 
     <div class="wrap foot" style="padding-inline:0">
-      <span>built with no framework, no build step, and no images</span>
+      <span>built with no framework and no build step</span>
       <span id="foot-size"></span>
       <span style="margin-left:auto"><a href="https://github.com/Cloverag" rel="noopener">source ↗</a></span>
     </div>
