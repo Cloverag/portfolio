@@ -50,19 +50,41 @@ xdg-open index.html
 python3 -m http.server 8000
 ```
 
-## Deploying to GitHub Pages
+## Deploying
+
+The site is on Vercel at **https://raghav-singh-iiitn.vercel.app**, connected to
+this repository through the Vercel GitHub App. Pushing to `main` deploys to
+production; a pull request gets its own preview URL. There is no build step, so
+nothing needs configuring beyond that.
 
 ```fish
-git init
-git add -A
-git commit -m "portfolio: terminal-style site"
-git branch -M main
-git remote add origin https://github.com/Cloverag/<repo>.git
-git push -u origin main
+git push origin main     # that is the whole deploy
 ```
 
-Then Settings → Pages → deploy from `main` / root. There is no build step, so
-nothing else needs configuring.
+To deploy without pushing — a local check against the real CDN, say:
+
+```fish
+npx vercel deploy --prod --yes
+```
+
+### If the site stops updating
+
+The failure mode to know about: Vercel stores a GitHub credential, and when it
+expires **nothing looks broken**. Pushes succeed, GitHub is green, and the live
+site just quietly stops changing. Check it directly rather than trusting a 200:
+
+```fish
+# does the live page match the file you just pushed?
+curl -s -o /dev/null -w "%{size_download}\n" https://raghav-singh-iiitn.vercel.app
+wc -c < index.html
+```
+
+If those disagree, re-link at
+`vercel.com/cloverags-projects/portfolio/settings/git`.
+
+Note also that `vercel alias set` pins a hostname to one specific deployment and
+does **not** follow production. The live hostname is registered as a project
+domain instead, which does.
 
 ## Keyboard and commands
 
