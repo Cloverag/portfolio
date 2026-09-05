@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raghav Singh — Data Science &amp; Systems</title>
+<meta name="description" content="Raghav Singh — B.Tech Data Science &amp; Analytics at IIIT Nagpur. Knowledge graphs, retrieval systems, deep learning, and infrastructure I run myself.">
+<meta name="author" content="Raghav Singh">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0a0a0a">
+
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Raghav Singh — Data Science &amp; Systems">
+<meta property="og:description" content="Knowledge graphs, retrieval systems, deep learning, and infrastructure I run myself.">
+<meta name="twitter:card" content="summary">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0a'/><text x='16' y='23' font-family='monospace' font-size='19' font-weight='700' fill='%23ffb454' text-anchor='middle'>&gt;_</text></svg>">
+
+<script>
+  // Set the theme before first paint so there is no flash of the wrong one.
+  try {
+    var t = localStorage.getItem('theme');
+    if (!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    document.documentElement.dataset.theme = t;
+  } catch (e) { /* private mode: the dark default in the markup stands */ }
+</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <span class="topbar__id">raghav<span style="color:var(--fg-faint)">@</span>iiitn</span>
+    <nav aria-label="Sections">
+      <a href="#whoami">00 whoami</a>
+      <a href="#skills">01 skills</a>
+      <a href="#projects">02 projects</a>
+      <a href="#activity">03 activity</a>
+      <a href="#contact">04 contact</a>
+    </nav>
+    <button class="topbar__btn" id="theme-toggle" type="button" aria-label="Toggle colour theme">
+      <span id="theme-label">light</span>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ================================================== 00 whoami -->
+  <section class="hero wrap" id="whoami">
+    <p class="prompt">
+      <span class="prompt__user">raghav@iiitn</span><span class="prompt__path">:~</span><span class="prompt__sig">$</span>
+      <span class="prompt__cmd">whoami</span>
+    </p>
+
+    <h1 class="hero__name">Raghav Singh<span class="cursor" aria-hidden="true"></span></h1>
+    <p class="hero__role" id="hero-role">Data Science &amp; Analytics · IIIT Nagpur · class of 2027</p>
+
+    <p class="hero__thesis" id="hero-thesis">
+      I build systems that remember, measure, and hold up when someone checks the numbers.
+    </p>
+
+    <div class="hero__links">
+      <a class="chip chip--solid" href="https://github.com/Cloverag" rel="me noopener">GitHub ↗</a>
+      <a class="chip" href="https://linkedin.com/in/raghav-singh-11b82a290" rel="me noopener">LinkedIn ↗</a>
+      <a class="chip" href="mailto:byjsuynr222@gmail.com">byjsuynr222@gmail.com</a>
+      <a class="chip" href="assets/raghav-singh-resume.pdf" id="resume-link">résumé.pdf ↗</a>
+    </div>
+
+    <div class="stats" id="hero-stats"></div>
+  </section>
+
+  <!-- ================================================== 01 skills -->
+  <section class="section wrap" id="skills">
+    <div class="section__head">
+      <span class="section__no">01</span>
+      <p class="prompt">
+        <span class="prompt__user">raghav@iiitn</span><span class="prompt__path">:~</span><span class="prompt__sig">$</span>
+        <span class="prompt__cmd">cat skills.txt</span>
+      </p>
+      <span class="section__meta" id="skills-meta"></span>
+    </div>
+    <div class="skills" id="skills-grid"></div>
+
+    <div class="section__head" style="margin-top:3rem">
+      <span class="section__no">01b</span>
+      <p class="prompt">
+        <span class="prompt__user">raghav@iiitn</span><span class="prompt__path">:~</span><span class="prompt__sig">$</span>
+        <span class="prompt__cmd">cat education.txt &amp;&amp; cat now.txt</span>
+      </p>
+    </div>
+    <div class="contact__grid">
+      <dl class="kv" id="education"></dl>
+      <ul class="now" id="now"></ul>
+    </div>
+  </section>
+
+  <!-- ================================================ 02 projects -->
+  <section class="section wrap" id="projects">
+    <div class="section__head">
+      <span class="section__no">02</span>
+      <p class="prompt">
+        <span class="prompt__user">raghav@iiitn</span><span class="prompt__path">:~</span><span class="prompt__sig">$</span>
+        <span class="prompt__cmd">ls -l projects/</span>
+      </p>
+      <span class="section__meta">click a row to expand · <kbd>j</kbd> <kbd>k</kbd> to move</span>
+    </div>
+
+    <div class="filters" id="filters" role="group" aria-label="Filter projects by track"></div>
+    <div class="projects" id="project-list"></div>
+    <p class="empty" id="projects-empty" hidden>no projects match that filter.</p>
+  </section>
+
+  <!-- ================================================ 03 activity -->
+  <section class="section wrap" id="activity">
+    <div class="section__head">
+      <span class="section__no">03</span>
+      <p class="prompt">
+        <span class="prompt__user">raghav@iiitn</span><span class="prompt__path">:~</span><span class="prompt__sig">$</span>
+        <span class="prompt__cmd">git log --stat --all</span>
+      </p>
+      <span class="section__meta" id="snapshot-meta"></span>
+    </div>
+
+    <div class="activity">
+      <div>
+        <h2 class="sr">Contribution calendar</h2>
+        <div class="heatmap__scroll">
+          <div class="heatmap__months" id="heatmap-months" aria-hidden="true"></div>
+          <div class="heatmap" id="heatmap" role="img" aria-label="Contribution calendar"></div>
+        </div>
+        <p class="heatmap__legend">
+          <span id="heatmap-caption"></span>
+          <span style="margin-left:auto">less</span>
+          <span class="heatmap__cell" data-l="0"></span>
+          <span class="heatmap__cell" data-l="1"></span>
+          <span class="heatmap__cell" data-l="2"></span>
+          <span class="heatmap__cell" data-l="3"></span>
+          <span class="heatmap__cell" data-l="4"></span>
+          <span>more</span>
+        </p>
+      </div>
+
+      <div>
+        <h2 class="sr">Language mix</h2>
+        <p class="snapshot" style="margin:0 0 0.8rem">
+          language mix by bytes across tracked repositories — notebooks excluded, since they are mostly serialised output
+        </p>
+        <div class="langs" id="langs"></div>
+      </div>
+
+      <div>
+        <h2 class="sr">Repositories</h2>
+        <div class="repos" id="repos"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================= 04 contact -->
+  <section class="section wrap" id="contact">
+    <div class="section__head">
+      <span class="section__no">04</span>
+      <p class="prompt">
+        <span class="prompt__user">raghav@iiitn</span><span class="prompt__path">:~</span><span class="prompt__sig">$</span>
+        <span class="prompt__cmd">contact --all</span>
+      </p>
+    </div>
+
+    <div class="contact__grid">
+      <dl class="kv">
+        <dt>email</dt>
+        <dd><a href="mailto:byjsuynr222@gmail.com">byjsuynr222@gmail.com</a></dd>
+        <dt>github</dt>
+        <dd><a href="https://github.com/Cloverag" rel="me noopener">github.com/Cloverag</a></dd>
+        <dt>linkedin</dt>
+        <dd><a href="https://linkedin.com/in/raghav-singh-11b82a290" rel="me noopener">/in/raghav-singh</a></dd>
+        <dt>location</dt>
+        <dd id="contact-location">Yamunanagar, Haryana, IN</dd>
+      </dl>
+
+      <p style="max-width:52ch;margin:0;color:var(--fg-dim)">
+        Open to internships in data science, ML engineering, and backend/platform work.
+        Every number on this page is traceable to something I can pull up live — ask me
+        about any of them.
+      </p>
+    </div>
+
+    <div class="wrap foot" style="padding-inline:0">
+      <span>built with no framework, no build step, and no images</span>
+      <span id="foot-size"></span>
+      <span style="margin-left:auto"><a href="https://github.com/Cloverag" rel="noopener">source ↗</a></span>
+    </div>
+  </section>
+
+</main>
+
+<!-- ==================================================== command bar -->
+<div class="cli">
+  <div class="wrap">
+    <div class="cli__out" id="cli-out" aria-live="polite"></div>
+    <form class="cli__form" id="cli-form" autocomplete="off">
+      <label class="cli__ps" for="cli-in">raghav@iiitn<span>:~$</span></label>
+      <input class="cli__in" id="cli-in" name="cmd" type="text"
+             placeholder="type help — or press / from anywhere"
+             aria-label="Command input" spellcheck="false" autocapitalize="off">
+      <span class="cli__hint"><kbd>/</kbd> focus · <kbd>t</kbd> theme · <kbd>?</kbd> help</span>
+    </form>
+  </div>
+</div>
+
+<script src="data/site.js"></script>
+<script src="data/github.js"></script>
+<script src="assets/main.js"></script>
+</body>
+</html>
