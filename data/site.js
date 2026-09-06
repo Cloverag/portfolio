@@ -78,6 +78,11 @@ window.SITE = {
       ],
       stack: ['Python', 'Neo4j', 'pgvector', 'PostgreSQL', 'FastAPI', 'Claude', 'TypeScript', 'React'],
       repo: 'Cloverag/callosum',
+      // Deployed 2026-09-06. The API runs on a 2008 Core 2 Duo at home behind a
+      // Cloudflare tunnel; Vercel serves the frontend and proxies to it. Pick an
+      // identity on /demo and the same request returns different material —
+      // founder 3 documents / 0 withheld, investor 2 / 1. Measured, not staged.
+      live: 'https://callosum-demo.vercel.app/demo',
     },
     {
       id: 'luad',
@@ -217,6 +222,8 @@ window.SITE = {
       metrics: [],
       stack: ['Python', 'GitHub Actions', 'SVG'],
       repo: 'Cloverag/Cloverag',
+      // The rendered profile is the artifact; the repo is only the machinery.
+      live: 'https://github.com/Cloverag',
     },
     {
       id: 'teleprompter',
@@ -256,9 +263,10 @@ window.SITE = {
       ],
       stack: ['Python', 'Pandas', 'NumPy', 'Power BI', 'Streamlit'],
       repo: 'Cloverag/Global-Renewable-Energy-Data-Analysis-1965-2023-',
-      // TODO(raghav): paste the public Power BI dashboard URL here — it is the
-      // strongest artifact on this project and the repo is the weaker link.
-      live: null,
+      // The published Power BI report — no licence needed to view. Team of 2: the
+      // report was a teammate's build, the data analysis was mine, which is why
+      // the Colab notebook below is the artifact that evidences MY contribution.
+      live: 'https://app.powerbi.com/view?r=eyJrIjoiOTM2OTk1NDMtZTNkNy00OTlhLTljOTQtMjYzNDI3ZmZkZDQ0IiwidCI6IjdjNjRmODJlLWZmODMtNGEzMi1iOThiLWZkZDZlMjFlOWEyYyJ9',
     },
     {
       id: 'routing',
